@@ -1,40 +1,48 @@
-library(bilan)
 library(data.table)
-library(xts)
-library(dygraphs)
 
+get.corr.data <- function(x, rho) {
+  
+  x <- na.omit(x)
+  n <- length(x)
+  
+  theta <- acos(rho)
+  
+  y <- rnorm(n, 2, .2)
+  X <- cbind(x, y)
+  Xctr <- scale(X, center = TRUE, scale = FALSE)
+  
+  Id <- diag(n)
+  Q <- qr.Q(qr(Xctr[, 1, drop = FALSE]))
+  P <- tcrossprod(Q)
+  x2o <- (Id - P) %*% Xctr[, 2]
+  Xc2 <- cbind(Xctr[, 1], x2o)
+  Y <- Xc2 %*% diag(1/sqrt(colSums(Xc2^2)))
+  
+  abs(Y[ , 2] + (1 / tan(theta)) * Y[ , 1])
+}
 
 id <- list.files('~/ownCloud/Active Docs/vuv_app/data/runoff/', pattern = '.rds')
 
+zdroj <- 'Zelivka'
+
 for (i in seq_along(id)) {
   
-  pol <- c('DTM', 'Průtok', 'Acesulfam', 'Caffein', 'Clarythromycin', 'Diclofenac', 'Gabapentin', 'Ibuprofen', 'Ibuprofen-2-hydroxy',
-           'Ibuprofen-carboxy', 'Karbamazepin', 'Oxypurinol', 'Paracetamol', 'Paraxanthine', 'Saccharin', 'Sulfamethoxazol',
-           'Telmisartan', 'Tramadol')
+  if(zdroj == 'Zelivka') {
+    
+    pol <- c('Acesulfam', 'Caffein', 'Clarythromycin', 'Diclofenac', 'Gabapentin', 'Ibuprofen', 'Ibuprofen-2-hydroxy',
+             'Ibuprofen-carboxy', 'Karbamazepin', 'Oxypurinol', 'Paracetamol', 'Paraxanthine', 'Saccharin', 'Sulfamethoxazol',
+             'Telmisartan', 'Tramadol')
+  }
+  
+  if(zdroj == 'Karany') {
+    
+    pol <- c()
+  }
+  
+  aux <- c('DTM', 'Průtok', pol)
   
   con <- readRDS(paste0('~/ownCloud/Active Docs/vuv_app/data/conc/conc_', id[i]))
-  con <- con[, which(names(con) %in% pol)]
-  
-  get.corr.data <- function(x, rho) {
-    
-    x <- na.omit(x)
-    n <- length(x)
-    
-    theta <- acos(rho)
-    
-    y <- rnorm(n, 2, .2)
-    X <- cbind(x, y)
-    Xctr <- scale(X, center = TRUE, scale = FALSE)
-    
-    Id <- diag(n)
-    Q <- qr.Q(qr(Xctr[, 1, drop = FALSE]))
-    P <- tcrossprod(Q)
-    x2o <- (Id - P) %*% Xctr[, 2]
-    Xc2 <- cbind(Xctr[, 1], x2o)
-    Y <- Xc2 %*% diag(1/sqrt(colSums(Xc2^2)))
-    
-    abs(Y[ , 2] + (1 / tan(theta)) * Y[ , 1])
-  }
+  con <- con[, which(names(con) %in% aux)]
   
   LM <- list()
   
