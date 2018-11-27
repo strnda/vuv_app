@@ -22,7 +22,7 @@ for (i in seq_along(id)) {
   setnames(dta, 'V1', 'R')
   setnames(dta, 'TMP', 'T')
   
-  bil <- bil.new('d', modif = 'period', period = 7)
+  bil <- bil.new('d') #, modif = 'period', period = 7)
   bil.set.values(bil, dta)
   bil.pet(bil,'latit', latitude = 50)
   bil.set.optim(bil, method = 'BS', crit = 'NS', max_iter = 1500)
