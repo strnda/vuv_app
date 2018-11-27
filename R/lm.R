@@ -44,7 +44,10 @@ for (i in seq_along(id)) {
     temp[, thr := as.numeric(gsub('-9', '', min(c, na.rm = T)))]
     temp <- na.omit(temp)
     
-    if(dim(temp[(c < 0) & !is.na(r)])[1] < 0) temp[c < 0, c := get.corr.data(r[c < 0], rho = .85)*thr]
+    if(dim(temp[c < 0])[1] > 0)  {
+      
+      temp[c < 0, c := get.corr.data(r[c < 0], rho = .95)*thr]
+    }
 
     if(dim(temp)[1] > 0) {
       

@@ -9,6 +9,8 @@ dta <- as.data.table(read.table(paste0('~/ownCloud/Active Docs/vuv_app/data/clim
 dta[, DTM := as.Date(DTM)]
 setnames(dta, 'TMP', 'T')
 
+dta <- dta[1:100,]
+
 bil.par <- readRDS(paste0('~/ownCloud/Active Docs/vuv_app/data/bilan/bil_par_', id[i]))
 
 bil <- bil.new('d') # , modif = 'period', period = 7)
@@ -29,16 +31,17 @@ pol <- c('DTM', 'Průtok', 'Acesulfam', 'Caffein', 'Clarythromycin', 'Diclofenac
 
 fits <- readRDS(paste0('~/ownCloud/Active Docs/vuv_app/data/lm/lm_', id[i]))
 fit <- fits[[15]]
-fit
-ci <- .90
 
-model.c <- as.data.table(predict(fit, list(RM = rgamma(100, .2)), interval = 'confidence', level = ci))
-model.c[, Time := seq(from = Sys.Date() - .N, by = 'day', length.out = .N)]
-model.c <- as.xts(model.c[, c(4, 1:3)])
+# ci <- .5
+
+model.c <- as.data.table(predict(fit, list(r = rmod[, RM]))) # , interval = 'confidence', level = ci))
+model.c[, Time := dta[, DTM]]
+model.c <- as.xts(model.c[, 2:1]) # model.c <- as.xts(model.c[, c(4, 1:3)])
 
 dygraph(model.c, main = 'Koncentrace') %>%
   dyAxis('x', drawGrid = FALSE) %>%
-  dySeries(c('lwr', 'fit', 'upr'), label = 'Koncentrace [ng/l]') %>%
+  dySeries('V1', label = 'Koncentrace [ng/l]') %>% # dySeries(c('lwr', 'fit', 'upr'), label = 'Koncentrace [ng/l]') %>%
   dyOptions(colors = RColorBrewer::brewer.pal(3, 'Set1')) %>%
   dyRangeSelector(height = 20) %>%
-  dyLegend(width = 300)
+  dyLegend(width = 400)
+
