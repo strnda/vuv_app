@@ -1,17 +1,21 @@
 library(bilan)
 library(data.table)
 library(xts)
-library(dygraphs)
+# library(dygraphs)
+library(ggplot2)
 
-id <- list.files('~/ownCloud/Active Docs/vuv_app/data/runoff/', pattern = '.rds')
+id <- list.files('./data/runoff/', pattern = '.rds')
 
-dta <- as.data.table(read.table(paste0('~/ownCloud/Active Docs/vuv_app/data/clim/', gsub('.rds', '.dat', id[i])), header = T))
+i <- 2
+j <- 5
+
+dta <- as.data.table(read.table(paste0('./data/clim/', gsub('.rds', '.dat', id[i])), header = T))
 dta[, DTM := as.Date(DTM)]
 setnames(dta, 'TMP', 'T')
 
-dta <- dta[1:100,]
+dta <- dta[1:1000,]
 
-bil.par <- readRDS(paste0('~/ownCloud/Active Docs/vuv_app/data/bilan/bil_par_', id[i]))
+bil.par <- readRDS(paste0('./data/bilan/bil_par_', id[i]))
 
 bil <- bil.new('d') # , modif = 'period', period = 7)
 bil.set.values(bil, dta)
@@ -29,19 +33,26 @@ pol <- c('DTM', 'Průtok', 'Acesulfam', 'Caffein', 'Clarythromycin', 'Diclofenac
 # 
 # }
 
-fits <- readRDS(paste0('~/ownCloud/Active Docs/vuv_app/data/lm/lm_', id[i]))
-fit <- fits[[15]]
+fits <- readRDS(paste0('./data/lm/lm_', id[i]))
+# fit <- fits[[j]]
+# 
+# # ci <- .5
+# 
+# model.c <- as.data.table(predict(fit, list(r = rmod[, RM]))) # , interval = 'confidence', level = ci))
+# model.c[, Time := dta[, DTM]]
+# model.c <- as.xts(model.c[, 2:1]) # model.c <- as.xts(model.c[, c(4, 1:3)])
+# 
+# dygraph(model.c, main = 'Koncentrace') %>%
+#   dyAxis('x', drawGrid = FALSE) %>%
+#   dySeries('V1', label = 'Koncentrace [ng/l]') %>% # dySeries(c('lwr', 'fit', 'upr'), label = 'Koncentrace [ng/l]') %>%
+#   dyOptions(colors = RColorBrewer::brewer.pal(3, 'Set1')) %>%
+#   dyRangeSelector(height = 20) %>%
+#   dyLegend(width = 400)
 
-# ci <- .5
+model.c <- rbindlist(lapply(fits[!is.na(fits)], function(x) data.table(Time = dta[, DTM], Concentration = predict(x, list(r = rmod[, RM])))), idcol = 'Polutant')
 
-model.c <- as.data.table(predict(fit, list(r = rmod[, RM]))) # , interval = 'confidence', level = ci))
-model.c[, Time := dta[, DTM]]
-model.c <- as.xts(model.c[, 2:1]) # model.c <- as.xts(model.c[, c(4, 1:3)])
-
-dygraph(model.c, main = 'Koncentrace') %>%
-  dyAxis('x', drawGrid = FALSE) %>%
-  dySeries('V1', label = 'Koncentrace [ng/l]') %>% # dySeries(c('lwr', 'fit', 'upr'), label = 'Koncentrace [ng/l]') %>%
-  dyOptions(colors = RColorBrewer::brewer.pal(3, 'Set1')) %>%
-  dyRangeSelector(height = 20) %>%
-  dyLegend(width = 400)
+(x <- ggplot(model.c) +
+  geom_line(aes(x = Time, y = Concentration), colour = 'red4') +
+  facet_wrap(~Polutant, ncol = 1, scales = 'free_y') +
+  theme_bw())
 

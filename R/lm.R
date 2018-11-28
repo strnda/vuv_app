@@ -21,7 +21,7 @@ get.corr.data <- function(x, rho) {
   abs(Y[ , 2] + (1 / tan(theta)) * Y[ , 1])
 }
 
-id <- list.files('~/ownCloud/Active Docs/vuv_app/data/runoff/', pattern = '.rds')
+id <- list.files('./data/runoff/', pattern = '.rds')
 
 
 zdroj <- 'Zelivka'
@@ -43,7 +43,7 @@ for (i in seq_along(id)) {
   
   aux <- c('DTM', 'Průtok', pol)
   
-  con <- readRDS(paste0('~/ownCloud/Active Docs/vuv_app/data/conc/conc_', id[i]))
+  con <- readRDS(paste0('./data/conc/conc_', id[i]))
   con <- con[, which(names(con) %in% aux)]
   
   LM <- list()
@@ -72,5 +72,5 @@ for (i in seq_along(id)) {
   }
   names(LM) <- names(con)[which(!(names(con) %in% c('DTM', 'Průtok')))]
   
-  saveRDS(LM, paste0('~/ownCloud/Active Docs/vuv_app/data/lm/lm_', id[i]))
+  saveRDS(LM, paste0('./data/lm/lm_', id[i]))
 }

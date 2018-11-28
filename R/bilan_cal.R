@@ -9,10 +9,10 @@ id <- list.files('~/ownCloud/Active Docs/vuv_app/data/runoff/', pattern = '.rds'
 
 for (i in seq_along(id)) {
   
-  dta.r <- as.data.table(readRDS(paste0('~/ownCloud/Active Docs/vuv_app/data/runoff/', id[i])))
+  dta.r <- as.data.table(readRDS(paste0('./data/runoff/', id[i])))
   dta.r[, DTM := as.Date(DTM)]
   
-  dta.c <- as.data.table(read.table(paste0('~/ownCloud/Active Docs/vuv_app/data/clim/', gsub('.rds', '.dat', id[i])), header = T))
+  dta.c <- as.data.table(read.table(paste0('./data/clim/', gsub('.rds', '.dat', id[i])), header = T))
   dta.c[, DTM := as.Date(DTM)]
   
   # summary(dta.r)
@@ -38,6 +38,6 @@ for (i in seq_along(id)) {
   #                      name = '') +
   #   theme_bw()
   
-  saveRDS(bil.get.params(bil), paste0('~/ownCloud/Active Docs/vuv_app/data/bilan/bil_par_', id[i]))
+  saveRDS(bil.get.params(bil), paste0('./data/bilan/bil_par_', id[i]))
 }
 
