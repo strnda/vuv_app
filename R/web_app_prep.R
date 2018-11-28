@@ -28,13 +28,11 @@ for (i in seq_along(id)) {
   
   model.c <- rbindlist(lapply(fits[!is.na(fits)], function(x) data.table(Time = dta[, DTM], Concentration = predict(x, list(r = rmod[, RM])))), idcol = 'Polutant')
   
-  # (x <- ggplot(model.c) +
-  #   geom_line(aes(x = Time, y = Concentration), colour = 'red4') +
-  #   facet_wrap(~Polutant, ncol = 1, scales = 'free_y') +
-  #   theme_bw())
+  (x <- ggplot(model.c) +
+    geom_line(aes(x = Time, y = Concentration), colour = 'red4') +
+    facet_wrap(~Polutant, ncol = 1, scales = 'free_y') +
+    theme_bw())
   
   saveRDS(model.c, paste0('./data/out/modelled_data_', id[i]))
 }
-
-
 

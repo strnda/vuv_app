@@ -23,8 +23,9 @@ get.corr.data <- function(x, rho) {
 
 id <- list.files('./data/runoff/', pattern = '.rds')
 
+zdroj <- 'Karany'
 
-zdroj <- 'Zelivka'
+if(zdroj == 'Zelivka') id <- id[nchar(id) == 10] else id <- id[nchar(id) == 5]
 
 for (i in seq_along(id)) {
   
@@ -51,6 +52,7 @@ for (i in seq_along(id)) {
   for (j in which(!(names(con) %in% c('DTM', 'Průtok')))) {
     
     temp <- data.table(r = con[, 'Průtok'], c = con[, j])
+    names(temp) <- c('r', 'c')
     temp[, thr := as.numeric(gsub('-9', '', min(c, na.rm = T)))]
     temp <- na.omit(temp)
     
