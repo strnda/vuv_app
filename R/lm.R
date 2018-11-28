@@ -23,7 +23,8 @@ get.corr.data <- function(x, rho) {
 
 id <- list.files('~/ownCloud/Active Docs/vuv_app/data/runoff/', pattern = '.rds')
 
-zdroj <- 'Karany'
+
+zdroj <- 'Zelivka'
 
 for (i in seq_along(id)) {
   
