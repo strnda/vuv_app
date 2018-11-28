@@ -23,6 +23,7 @@ get.corr.data <- function(x, rho) {
 
 id <- list.files('~/ownCloud/Active Docs/vuv_app/data/runoff/', pattern = '.rds')
 
+
 zdroj <- 'Zelivka'
 
 for (i in seq_along(id)) {
@@ -36,7 +37,8 @@ for (i in seq_along(id)) {
   
   if(zdroj == 'Karany') {
     
-    pol <- c()
+    pol <- c("Karbamazepin", "Sulfamethoxazol", "Ibuprofen", "Diclofenac", "Caffein", "Metoprolol", "Saccharin", 
+            "Tramadol", "Ibuprofen-2-hydroxy", "Acesulfam", "Oxypurinol", "Paraxanthine")
   }
   
   aux <- c('DTM', 'Průtok', pol)
